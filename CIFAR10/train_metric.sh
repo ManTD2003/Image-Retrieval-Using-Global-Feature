@@ -1,0 +1,2 @@
+conda activate train_ir
+python train_metric.py --models vit_s16 --batch_size 128
