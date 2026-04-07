@@ -4,9 +4,7 @@ import torchvision
 
 import os
 import pandas as pd
-import sys
 import argparse
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils.extract_utils import *
 
 """ 

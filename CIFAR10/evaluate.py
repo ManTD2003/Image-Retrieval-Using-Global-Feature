@@ -3,8 +3,6 @@ import os
 import pandas as pd
 import torch
 import argparse
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils.eval_utils import *
 
 # Device setup

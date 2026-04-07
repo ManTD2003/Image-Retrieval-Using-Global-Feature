@@ -185,7 +185,8 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
-Texture/dataset/
-CIFAR10/cifar10_features/
-CIFAR10/model_save/
-CIFAR10/results/
+**/dataset/
+**/datasets/
+**_features/
+**/model_save/
+**/results/
