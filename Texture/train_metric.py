@@ -6,13 +6,14 @@ import torch
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torchvision import datasets
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 from torch.amp import GradScaler
 import timm
 from pytorch_metric_learning import distances, losses, miners, reducers
 from pytorch_metric_learning.reducers import MultipleReducers, ThresholdReducer, MeanReducer
 from pytorch_metric_learning.utils.accuracy_calculator import AccuracyCalculator
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils.metric_train_utils import train, get_all_embeddings, test
 
 torch.backends.cudnn.benchmark = True
@@ -22,9 +23,9 @@ MODELS = {
     "swin_s":  "swin_small_patch4_window7_224.ms_in1k",
     "gcvit_s": "gcvit_small.in1k",
 }
-DATASET_DIR      = "./dataset/train"
+TRAIN_DIR        = "./dataset/train"
+VALID_DIR        = "./dataset/valid"
 MODEL_SAVE_FOLDER = "./model_save"
-TRAIN_RATIO      = 0.8   # fraction of data used for training; rest is used for evaluation
 
 
 def main(args):
@@ -60,15 +61,9 @@ def main(args):
         if torch.cuda.is_available():
             model = torch.compile(model)
 
-        # Load full dataset and split into train / val
-        full_dataset = datasets.ImageFolder(root=DATASET_DIR, transform=transform)
-        n_train = int(len(full_dataset) * TRAIN_RATIO)
-        n_val   = len(full_dataset) - n_train
-        train_set, val_set = random_split(
-            full_dataset, [n_train, n_val],
-            generator=torch.Generator().manual_seed(42)
-        )
-        print(f"Dataset split: {n_train} train / {n_val} val | {len(full_dataset.classes)} classes")
+        train_set = datasets.ImageFolder(root=TRAIN_DIR, transform=transform)
+        val_set   = datasets.ImageFolder(root=VALID_DIR, transform=transform)
+        print(f"Train: {len(train_set)} images | Val: {len(val_set)} images | {len(train_set.classes)} classes")
 
         train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True,
                                   num_workers=num_workers, pin_memory=True, persistent_workers=True)
@@ -93,7 +88,7 @@ def main(args):
         with torch.no_grad():
             test(train_set, val_set, model, accuracy_calculator)
 
-        del model, optimizer, scheduler, train_loader, val_loader, train_set, val_set, full_dataset
+        del model, optimizer, scheduler, train_loader, val_loader, train_set, val_set
         if torch.cuda.is_available():
             torch._dynamo.reset()
             torch.cuda.empty_cache()
