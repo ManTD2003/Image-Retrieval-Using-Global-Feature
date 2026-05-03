@@ -13,7 +13,6 @@ from pytorch_metric_learning import distances, losses, miners, reducers
 from pytorch_metric_learning.reducers import MultipleReducers, ThresholdReducer, MeanReducer
 from pytorch_metric_learning.utils.accuracy_calculator import AccuracyCalculator
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from utils.metric_train_utils import train, get_all_embeddings, test
 
 torch.backends.cudnn.benchmark = True

@@ -7,7 +7,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from torchvision import datasets
 from torch.amp import GradScaler
 import timm
-from ..utils.metric_train_utils import *
+from utils.metric_train_utils import *
 
 torch.backends.cudnn.benchmark = True
 
